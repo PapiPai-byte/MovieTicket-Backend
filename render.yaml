@@ -1,0 +1,37 @@
+services:
+  # ============================================================================
+  # Movie Ticket Booking API - Web Service on Render
+  # ============================================================================
+  - type: web
+    name: movie-ticket-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerfileTarget: render
+    plan: free
+    region: oregon
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_NAME
+        value: "MovieTicket API"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        sync: false # Set to your deployed Render URL e.g. https://movie-ticket-api.onrender.com
+      - key: APP_KEY
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false # Set to your frontend deployment URL e.g. https://your-app.vercel.app
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_SSLMODE
+        value: require
+      - key: DATABASE_URL
+        sync: false # Paste your NeonDB connection string here (e.g. postgresql://user:pass@ep-xyz.region.aws.neon.tech/neondb?sslmode=require)
+      - key: RUN_SEEDERS
+        value: "true"
+      - key: SANCTUM_STATEFUL_DOMAINS
+        sync: false
+

@@ -1,0 +1,19 @@
+FROM php:8.3-cli
+
+RUN apt-get update && apt-get install -y libpq-dev libzip-dev unzip git \
+    && docker-php-ext-install pdo_pgsql zip \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www
+COPY . .
+
+RUN composer install --no-dev --optimize-autoloader --no-interaction \
+    && sed -i 's/\r$//' docker/entrypoint.render.sh \
+    && mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
+EXPOSE 10000
+CMD ["sh", "docker/entrypoint.render.sh"]
